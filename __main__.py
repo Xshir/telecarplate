@@ -18,12 +18,13 @@ while True:
         time_string = get_relatives_of_license_plate(plate_number, 'arrival')
     except IndexError:
         pass
-    text_format = f"""
-    !! [ VIP Parked ] !!                          
-    Name: {name}                     
-    Vehicle: {plate_number}                       
-    Time: {time_string}
-    """
+    if name is not None:
+        text_format = f"""
+        !! [ VIP Parked ] !!                          
+        Name: {name}                     
+        Vehicle: {plate_number}                       
+        Time: {time_string}
+        """
     frame = cv2.imshow('frame', frame)
     if len(plate_number) > 0:
         print(plate_number[0])
