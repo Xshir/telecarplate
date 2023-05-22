@@ -16,7 +16,11 @@ while True:
     print('looping...')
     ret, frame = vid.read()
     try:
-        plate_number = get_detected_license_plate_number(frame, todays_vip_cars_)
+        try:
+            plate_number = get_detected_license_plate_number(frame, todays_vip_cars_)
+        except:
+            plate_number = ''
+            pass
         name = get_relatives_of_license_plate(plate_number, 'vip_name')
         time_string = get_relatives_of_license_plate(plate_number, 'arrival')
     except IndexError:
