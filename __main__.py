@@ -12,7 +12,6 @@ todays_vip_cars_ = get_data_from_database('vehicle')
 while True:
     print('looping...')
     ret, frame = vid.read()
-    frame = cv2.imshow('frame', frame)
     
     plate_number = get_detected_license_plate_number(frame, todays_vip_cars_)
     name = get_relatives_of_license_plate(plate_number, 'vip_name')
@@ -23,6 +22,7 @@ while True:
     Vehicle: {plate_number}                       
     Time: {time_string}
     """
+    frame = cv2.imshow('frame', frame)
     if len(plate_number) > 0:
         print(plate_number[0])
         bot.send_message(CHAT_ID, text_format)
