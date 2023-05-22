@@ -10,6 +10,7 @@ vid = cv2.VideoCapture(0)
 
 todays_vip_cars_ = get_data_from_database('vehicle')
 while True:
+    print('looping...')
     ret, frame = vid.read()
     frame = cv2.imshow('frame', frame)
     
