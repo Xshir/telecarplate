@@ -82,6 +82,10 @@ def get_detected_license_plate_number(img, todays_vip_cars):
     Cropped = gray[topx : bottomx + 1, topy : bottomy + 1]
     alt_ocr_text_1 = ocr(opencv_frame=Cropped) # get text from camera frame
     #filter_ = filtering(alt_ocr_text_1)
+    if alt_ocr_text_1 is False:
+        print('no license detected')
+        return
+    
     difflib_filtering = difflib_filter(alt_ocr_text_1, todays_vip_cars)
     return difflib_filtering
 
