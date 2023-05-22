@@ -9,6 +9,9 @@ bot = telebot.TeleBot(BOT_TOKEN)
 vid = cv2.VideoCapture(0)
 
 todays_vip_cars_ = get_data_from_database('vehicle')
+plate_number = ''
+name = ''
+time_string = ''
 while True:
     print('looping...')
     ret, frame = vid.read()
