@@ -22,7 +22,10 @@ def ocr(opencv_frame):
     parsed_text = json_response["ParsedResults"][0]["ParsedText"]
     if parsed_text != "":
         return parsed_text
-    else: 
+    else:
+        if parsed_text == "":
+            print(f"parsed: ''")
+        else: print(f"parsed: {parsed_text}")
         return False
 
 
