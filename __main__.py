@@ -29,11 +29,12 @@ while True:
         Time: {time_string}
         """
     frame = cv2.imshow('frame', frame)
-    if len(plate_number) > 0:
-        print(plate_number[0])
-        bot.send_message(CHAT_ID, text_format)
-    elif len(plate_number) == 0:
-        print('no match')
+    if plate_number is not None:
+        if len(plate_number) > 0:
+            print(plate_number[0])
+            bot.send_message(CHAT_ID, text_format)
+        elif len(plate_number) == 0:
+            print('no match')
     
 
 
