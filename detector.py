@@ -37,7 +37,7 @@ def filtering(text_):
 def get_detected_license_plate_number(img, todays_vip_cars):
     if isinstance(img, str):
         img = cv2.imread(img, cv2.IMREAD_COLOR)
-    img = cv2.resize(img, (600, 400))
+    #img = cv2.resize(img, (600, 400))
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     gray = cv2.bilateralFilter(gray, 13, 15, 15)
 
