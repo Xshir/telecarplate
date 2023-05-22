@@ -3,18 +3,19 @@ import cv2
 import imutils
 import numpy as np
 import pytesseract
-import easyocr
+#import easyocr
 import random
 import os
 import difflib
+from alt_ocr import ocr
 
-reader = easyocr.Reader(['en']) # this needs to run only once to load the model into memory
+#reader = easyocr.Reader(['en']) # this needs to run only once to load the model into memory
 
 pytesseract.pytesseract.tesseract_cmd = "C:/Program Files/Tesseract-OCR/tesseract.exe"
 
-file = f"./images/{random.choice(os.listdir('./images'))}"
-file = "./images/HSRP-NUMBER-Plate.jpg"
-print(file)
+#file = f"./images/{random.choice(os.listdir('./images'))}"
+#file = "./images/HSRP-NUMBER-Plate.jpg"
+#print(file)
 
 def difflib_filter(text, possible):
     cutoff=0.8
@@ -32,10 +33,10 @@ def filtering(text_):
         #print(ret)
         return ret
 
-todays_vip_cars_ = ["HR26VM8771", "SDN0382X", "HR11VV9991"]
+
 def get_detected_license_plate_number(img, todays_vip_cars):
     if isinstance(img, str):
-        img = cv2.imread(file, cv2.IMREAD_COLOR)
+        img = cv2.imread(img, cv2.IMREAD_COLOR)
     img = cv2.resize(img, (600, 400))
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     gray = cv2.bilateralFilter(gray, 13, 15, 15)
@@ -78,10 +79,9 @@ def get_detected_license_plate_number(img, todays_vip_cars):
     (topx, topy) = (np.min(x), np.min(y))
     (bottomx, bottomy) = (np.max(x), np.max(y))
     Cropped = gray[topx : bottomx + 1, topy : bottomy + 1]
-
-    text_1 = reader.readtext(Cropped)
-    filter_ = filtering(text_1)
-    difflib_filtering = difflib_filter(filter_, todays_vip_cars)
+    alt_ocr_text_1 = ocr(opencv_frame=Cropped) # get text from camera frame
+    #filter_ = filtering(alt_ocr_text_1)
+    difflib_filtering = difflib_filter(alt_ocr_text_1, todays_vip_cars)
     return difflib_filtering
 
 

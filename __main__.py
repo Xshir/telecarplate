@@ -2,35 +2,32 @@ import telebot
 import time
 import cv2
 from detector import get_detected_license_plate_number
-from constants import BOT_TOKEN
-
-
-CHAT_ID = "-919378243"
+from constants import BOT_TOKEN, CHAT_ID
+from database_functions import get_data_from_database, get_relatives_of_license_plate
 
 bot = telebot.TeleBot(BOT_TOKEN)
-name, plate_number, lot_number, time_string = ""
-text_format = f"""
+vid = cv2.VideoCapture(0)
 
-!! [ VIP Parked ] !!                          
-Name: {name}                     
-Vehicle: {plate_number}
-Lot no: {lot_number}                        
-Time: {time_string}
-"""
-vid = cv2.VideoCapture(-1)
-
-todays_vip_cars_ = ["HR26VM8771", "SDN0382X", "HR11VV9991"]
+todays_vip_cars_ = get_data_from_database('vehicle')
 while True:
     ret, frame = vid.read()
     frame = cv2.imshow('frame', frame)
-   
-    x = get_detected_license_plate_number(frame, todays_vip_cars_)
-    if len(x) > 0:
-        print(x[0])
-    elif len(x) == 0:
+    
+    plate_number = get_detected_license_plate_number(frame, todays_vip_cars_)
+    name = get_relatives_of_license_plate(plate_number, 'vip_name')
+    time_string = get_relatives_of_license_plate(plate_number, 'arrival')
+    text_format = f"""
+    !! [ VIP Parked ] !!                          
+    Name: {name}                     
+    Vehicle: {plate_number}                       
+    Time: {time_string}
+    """
+    if len(plate_number) > 0:
+        print(plate_number[0])
+        bot.send_message(CHAT_ID, text_format)
+    elif len(plate_number) == 0:
         print('no match')
-    time.sleep(2)
-    #bot.send_message(CHAT_ID, text_format)
+    
 
 
 #bot.infinity_polling(interval=0, timeout=20)
