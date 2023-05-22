@@ -12,10 +12,12 @@ todays_vip_cars_ = get_data_from_database('vehicle')
 while True:
     print('looping...')
     ret, frame = vid.read()
-    
-    plate_number = get_detected_license_plate_number(frame, todays_vip_cars_)
-    name = get_relatives_of_license_plate(plate_number, 'vip_name')
-    time_string = get_relatives_of_license_plate(plate_number, 'arrival')
+    try:
+        plate_number = get_detected_license_plate_number(frame, todays_vip_cars_)
+        name = get_relatives_of_license_plate(plate_number, 'vip_name')
+        time_string = get_relatives_of_license_plate(plate_number, 'arrival')
+    except IndexError:
+        pass
     text_format = f"""
     !! [ VIP Parked ] !!                          
     Name: {name}                     
