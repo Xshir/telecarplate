@@ -66,7 +66,7 @@ def get_detected_license_plate_number(img, todays_vip_cars):
     if detected == 1:
         cv2.drawContours(img, [screenCnt], -1, (0, 0, 255), 3)
 
-        mask = np.zeros(gray.shape, np.uint8)
+        
         new_image = cv2.drawContours(
             mask,
             [screenCnt],
@@ -75,7 +75,7 @@ def get_detected_license_plate_number(img, todays_vip_cars):
             -1,
         )
         new_image = cv2.bitwise_and(img, img, mask=mask)
-
+    mask = np.zeros(gray.shape, np.uint8)
     (x, y) = np.where(mask == 255)
     (topx, topy) = (np.min(x), np.min(y))
     (bottomx, bottomy) = (np.max(x), np.max(y))
