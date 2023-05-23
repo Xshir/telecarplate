@@ -3,13 +3,13 @@ import cv2
 import imutils
 import numpy as np
 import pytesseract
-#import easyocr
+import easyocr
 import random
 import os
 import difflib
 from alt_ocr import ocr
 
-#reader = easyocr.Reader(['en']) # this needs to run only once to load the model into memory
+reader = easyocr.Reader(['en']) # this needs to run only once to load the model into memory
 
 pytesseract.pytesseract.tesseract_cmd = "C:/Program Files/Tesseract-OCR/tesseract.exe"
 
@@ -18,7 +18,8 @@ pytesseract.pytesseract.tesseract_cmd = "C:/Program Files/Tesseract-OCR/tesserac
 #print(file)
 
 def difflib_filter(text, possible):
-    cutoff=0.8
+    #print(text, possible)
+    cutoff=0.5
     close = difflib.get_close_matches(text, possible, cutoff=cutoff)
     #print(f"close: {close}")
     return close
@@ -41,7 +42,7 @@ def get_detected_license_plate_number(img, todays_vip_cars):
     img = cv2.resize(img, (600, 400))
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     gray = cv2.bilateralFilter(gray, 13, 15, 15)
-
+    
     edged = cv2.Canny(gray, 30, 200)
     contours = cv2.findContours(edged.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     contours = imutils.grab_contours(contours)
@@ -67,26 +68,31 @@ def get_detected_license_plate_number(img, todays_vip_cars):
         cv2.drawContours(img, [screenCnt], -1, (0, 0, 255), 3)
 
     mask = np.zeros(gray.shape, np.uint8)
-    new_image = cv2.drawContours(
-        mask,
-        [screenCnt],
-        0,
-        255,
-        -1,
-    )
-    new_image = cv2.bitwise_and(img, img, mask=mask)
-
-    (x, y) = np.where(mask == 255)
-    (topx, topy) = (np.min(x), np.min(y))
-    (bottomx, bottomy) = (np.max(x), np.max(y))
-    Cropped = gray[topx : bottomx + 1, topy : bottomy + 1]
-    alt_ocr_text_1 = ocr(opencv_frame=Cropped) # get text from camera frame
-    #filter_ = filtering(alt_ocr_text_1)
-    if alt_ocr_text_1 is False:
-        print('no license detected')
-        return
+    try:
+        new_image = cv2.drawContours(
+            mask,
+            [screenCnt],
+            0,
+            255,
+            -1,
+        )
+        new_image = cv2.bitwise_and(img, img, mask=mask)
     
-    difflib_filtering = difflib_filter(alt_ocr_text_1, todays_vip_cars)
+
+        (x, y) = np.where(mask == 255)
+        (topx, topy) = (np.min(x), np.min(y))
+        (bottomx, bottomy) = (np.max(x), np.max(y))
+        Cropped = gray[topx : bottomx + 1, topy : bottomy + 1]
+    except: pass
+    
+    text_1 = reader.readtext(img)
+    #alt_ocr_text_1 = ocr(opencv_frame=Cropped) # get text from camera frame
+    #filter_ = filtering(alt_ocr_text_1)
+    #if alt_ocr_text_1 is False:
+        #print('no license detected')
+        #return
+    
+    difflib_filtering = difflib_filter(filtering(text_1), todays_vip_cars)
     return difflib_filtering
 
 

@@ -14,38 +14,50 @@ def start_database_connection() -> asyncpg.Pool:
         print(f"[PSQL] | Database Connection Error: {err}")
 
 
-def get_data_from_database(column) -> list:
+def get_data_from_database(pool, column) -> list:
     try:
         ret_list = []
-        pool = start_database_connection()
+        
         conn = event_loop.run_until_complete(pool.acquire())
         query = f"SELECT * FROM vip_car_table"
         rows = event_loop.run_until_complete(conn.fetch(query))
-        for index in range(3):
-            data = rows[index][column]
-            ret_list.append(data)
-        return ret_list
+        if column.lower() == 'all':
+            for index in range(4):
+               vehicle = rows[index]['vehicle']
+               arrival = rows[index]['arrival']
+               vip_name = rows[index]['vip_name']
+               ret_list.append((vehicle, arrival, vip_name))
+            return ret_list
+        else:
+
+            for index in range(4):
+                data = rows[index][column]
+                ret_list.append(data)
+            return ret_list
     finally:
 
         event_loop.run_until_complete(pool.release(conn))
         event_loop.run_until_complete(pool.close())
-
-def get_relatives_of_license_plate(license_plate, relative_column):
+"""
+def get_relative_data(pool, license_plate, relative_column):
     try:
-
-        pool = start_database_connection()
         conn = event_loop.run_until_complete(pool.acquire())
         query = f"SELECT * FROM vip_car_table WHERE vehicle = '{license_plate}'"
         rows = event_loop.run_until_complete(conn.fetch(query))
         return rows[0][relative_column]
+    except Exception as err:
+        print(err)
     finally:
 
         event_loop.run_until_complete(pool.release(conn))
         event_loop.run_until_complete(pool.close())
-
 """
-list_ = get_data_from_database("vehicle")
-print(list_)
+list_vip_names = get_data_from_database(start_database_connection(), 'vip_name')
+list_license_plates = get_data_from_database(start_database_connection(), 'vehicle')
+list_arrival_time = get_data_from_database(start_database_connection(), 'arrival')
 
-"""
-#print(str(get_relatives_of_license_plate('SBL4567F', 'arrival')))
+list_all_values = get_data_from_database(start_database_connection(), 'all')
+
+
+#print(list_all_values)
+
